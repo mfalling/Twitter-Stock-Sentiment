@@ -1,14 +1,18 @@
 # Library -----------------------------------------------------------------
-library(rtweet)
-library(dplyr)
-library(stringr)
-library(textclean)
-library(tidytext)
-library(ggplot2)
+
+library(rtweet)      # Twitter API
+library(dplyr)       # Data Cleaning
+library(stringr)     # Data Cleaning
+library(textclean)   # Data Cleaning
+library(tidytext)    # Data Cleaning
+library(syuzhet)     # Sentiment Analysis
+library(ggplot2)     # Graphing
+library(tidyquant)   # Stocks
 
 # About -------------------------------------------------------------------
 
 # First "real" repo using Github Desktop.
+# Twitter GME Sentiment vs GME stock prices.
 
 # Collect & Subset Data ---------------------------------------------------
 
@@ -60,3 +64,10 @@ ggplot(afinn_sent, aes(x = created_at, y = sentiment)) +
   theme_minimal() +
   scale_x_datetime(labels = scales::time_format("%H:%M"))
 ggsave("output/TwitterGME.png")
+
+
+# Get GME Stock Prices ----------------------------------------------------
+
+# Pull Apple stock data
+gme <- tq_get("GME", get = "stock.prices", 
+                from = "2021-03-11", to = "2021-03-12")
