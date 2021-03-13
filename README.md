@@ -3,4 +3,6 @@
 
 
 GME sentiment leading up to Friday, March 12, 2021:
-![Line Graph](output/GME.gif)
+
+
+![Twitter Sentiment](output/TwitterGME.png)
