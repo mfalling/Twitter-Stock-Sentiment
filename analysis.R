@@ -8,7 +8,7 @@ library(tidytext)    # Data Cleaning
 library(syuzhet)     # Sentiment Analysis
 library(ggplot2)     # Graphing
 library(tidyquant)   # Stocks
-
+library(scales)      # Scaling
 # About -------------------------------------------------------------------
 
 # First "real" repo using Github Desktop.
@@ -39,6 +39,7 @@ tokens <- rt %>%
 
 # Convert timezone, round to minutes, and coerce to character.
 # Date is coerce to character to allow group_by() functionality.
+tokens$created_at <- as.POSIXct(tokens$created_at)
 attr(tokens$created_at, "tzone") <- "US/Eastern"
 tokens$created_at <- round(tokens$created_at, units = "mins")
 tokens$created_at <- as.character(tokens$created_at)
@@ -53,21 +54,22 @@ afinn_sent <- tokens %>%
   inner_join(dict, by = "word") %>%
   group_by(created_at) %>%
   summarise(sentiment = mean(value)) %>%
-  arrange(desc(created_at)) %>%
+  arrange((created_at)) %>%
   mutate(created_at = as.POSIXct(created_at))
 
+# Cut to 8AM - 7PM EST
+afinn_sent <- afinn_sent[300:925, ]
 
 ggplot(afinn_sent, aes(x = created_at, y = sentiment)) + 
   geom_line(group = 1) + 
   labs(title = "Twitter GME Sentiment",
        x = "Time of Post") +
-  theme_minimal() +
-  scale_x_datetime(labels = scales::time_format("%H:%M"))
+  theme_minimal() 
 ggsave("output/TwitterGME.png")
 
 
-# Get GME Stock Prices ----------------------------------------------------
+# Load Stock Prices -------------------------------------------------------
 
-# Pull Apple stock data
-gme <- tq_get("GME", get = "stock.prices", 
-                from = "2021-03-11", to = "2021-03-12")
+prices <- read.csv("data/prices.csv", fileEncoding = "UTF-8-BOM")
+prices$time <- as.POSIXct(prices$time, tz = "US/Eastern")
+str(prices)
